@@ -1,5 +1,5 @@
 import type { AppError } from '../../../../core/errors/AppError';
-import type { Pokemon } from '../../domain/entities/Pokemon';
+import type { PokemonSummary } from '../../domain/entities/PokemonSummary';
 
 /**
  * Discriminated union modeling every legal state of the Pokémon list screen.
@@ -13,34 +13,26 @@ export type PokemonListState =
   | { readonly status: 'error'; readonly error: AppError }
   | {
       readonly status: 'success';
-      readonly items: readonly Pokemon[];
+      readonly items: readonly PokemonSummary[];
       readonly nextOffset: number | null;
       readonly hasMore: boolean;
       readonly loadingMore: boolean;
       readonly revalidating: boolean;
     };
 
-/**
- * Actions accepted by the list reducer. Kept flat and specific so each
- * transition is auditable in one place ({@link listReducer}).
- */
 export type PokemonListAction =
   | { readonly type: 'load/start' }
-  | { readonly type: 'load/success'; readonly items: readonly Pokemon[]; readonly nextOffset: number | null; readonly hasMore: boolean }
+  | { readonly type: 'load/success'; readonly items: readonly PokemonSummary[]; readonly nextOffset: number | null; readonly hasMore: boolean }
   | { readonly type: 'load/error'; readonly error: AppError }
   | { readonly type: 'loadMore/start' }
-  | { readonly type: 'loadMore/success'; readonly items: readonly Pokemon[]; readonly nextOffset: number | null; readonly hasMore: boolean }
+  | { readonly type: 'loadMore/success'; readonly items: readonly PokemonSummary[]; readonly nextOffset: number | null; readonly hasMore: boolean }
   | { readonly type: 'loadMore/error' }
   | { readonly type: 'refresh/start' }
-  | { readonly type: 'refresh/success'; readonly items: readonly Pokemon[]; readonly nextOffset: number | null; readonly hasMore: boolean }
+  | { readonly type: 'refresh/success'; readonly items: readonly PokemonSummary[]; readonly nextOffset: number | null; readonly hasMore: boolean }
   | { readonly type: 'refresh/error' };
 
 export const initialListState: PokemonListState = { status: 'idle' };
 
-/**
- * Reducer that maps `(state, action)` to a new state. Pure and total —
- * unknown transitions are ignored, keeping current state intact.
- */
 export const listReducer = (state: PokemonListState, action: PokemonListAction): PokemonListState => {
   switch (action.type) {
     case 'load/start':
@@ -63,15 +55,26 @@ export const listReducer = (state: PokemonListState, action: PokemonListAction):
       if (state.status !== 'success') return state;
       return { ...state, loadingMore: true };
 
-    case 'loadMore/success':
+    case 'loadMore/success': {
       if (state.status !== 'success') return state;
+      // Dedup on id — defensive belt for the case where a race condition or
+      // an overlapping page write slips past the inflight lock.
+      const seen = new Set(state.items.map((p) => p.id));
+      const merged = [...state.items];
+      for (const item of action.items) {
+        if (!seen.has(item.id)) {
+          seen.add(item.id);
+          merged.push(item);
+        }
+      }
       return {
         ...state,
-        items: [...state.items, ...action.items],
+        items: merged,
         nextOffset: action.nextOffset,
         hasMore: action.hasMore,
         loadingMore: false,
       };
+    }
 
     case 'loadMore/error':
       if (state.status !== 'success') return state;

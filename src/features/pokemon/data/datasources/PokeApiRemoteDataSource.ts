@@ -4,6 +4,7 @@ import { ok, err, type Result } from '../../../../core/result/Result';
 import { appError, type AppError } from '../../../../core/errors/AppError';
 import { AppErrorCode } from '../../../../core/errors/AppErrorCode';
 import { isPokemonDetailDto, type PokemonDetailDto } from '../dtos/PokemonDetailDto';
+import { isPokemonSpeciesDto, type PokemonSpeciesDto } from '../dtos/PokemonSpeciesDto';
 import { isResourceLinkDto, type ResourceLinkDto } from '../dtos/ResourceLinkDto';
 import { isRemotePage, type RemotePage } from '../types/RemotePage';
 import type { PagingKey } from '../types/PagingKey';
@@ -43,6 +44,18 @@ export class PokeApiRemoteDataSource implements PokemonRemoteDataSource {
     if (!isPokemonDetailDto(response.value)) {
       this.logger.error('PokeApiRemoteDataSource: malformed pokemon detail response', undefined, { path, id });
       return err(appError(AppErrorCode.InvalidResponse, `Malformed pokemon detail response for id ${id}`));
+    }
+    return ok(response.value);
+  }
+
+  async fetchSpecies(id: number): Promise<Result<PokemonSpeciesDto, AppError>> {
+    const path = `/pokemon-species/${id}`;
+    const response = await this.http.getJson(path);
+    if (!response.ok) return response;
+
+    if (!isPokemonSpeciesDto(response.value)) {
+      this.logger.error('PokeApiRemoteDataSource: malformed pokemon species response', undefined, { path, id });
+      return err(appError(AppErrorCode.InvalidResponse, `Malformed pokemon species response for id ${id}`));
     }
     return ok(response.value);
   }

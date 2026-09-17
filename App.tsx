@@ -24,13 +24,13 @@ const AppNavigator = () => {
         pokemonList: () => (
           <PokemonListScreen
             repository={pokemonRepository}
-            onSelectPokemon={(id) => router.navigate({ name: 'pokemonDetail', id })}
+            onSelectPokemon={(summary) => router.navigate({ name: 'pokemonDetail', summary })}
           />
         ),
         pokemonDetail: (route) => (
           <PokemonDetailScreen
             repository={pokemonRepository}
-            id={route.id}
+            summary={route.summary}
             onBack={router.goBack}
           />
         ),

@@ -1,17 +1,21 @@
 import type { CachedValue, JsonCache } from '../../../../core/cache/JsonCache';
 import type { Pokemon } from '../../domain/entities/Pokemon';
-import type { PokemonPage } from '../../domain/entities/PokemonPage';
-import { isStoredPage } from '../records/StoredPage';
+import type { PokemonSummariesPage } from '../../domain/entities/PokemonSummariesPage';
 import { isStoredPokemon } from '../records/StoredPokemon';
-import { mapPokemonPageToStored, mapPokemonToStored } from '../mappers/domainToRecord';
-import { mapStoredPageToDomain, mapStoredPokemonToDomain } from '../mappers/recordToDomain';
+import { isStoredSummariesPage } from '../records/StoredSummariesPage';
+import {
+  mapStoredSummariesPageToDomain,
+  mapSummariesPageToStored,
+} from '../mappers/summaryMappers';
+import { mapPokemonToStored } from '../mappers/domainToRecord';
+import { mapStoredPokemonToDomain } from '../mappers/recordToDomain';
 import type { PagingKey } from '../types/PagingKey';
 import type { PokemonLocalDataSource } from './PokemonLocalDataSource';
 
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
-const pageKey = (paging: PagingKey): string =>
-  `pokemon:list:offset:${paging.offset}:limit:${paging.limit}`;
+const summariesPageKey = (paging: PagingKey): string =>
+  `pokemon:summaries:offset:${paging.offset}:limit:${paging.limit}`;
 
 const pokemonKey = (id: number): string => `pokemon:detail:${id}`;
 
@@ -31,14 +35,18 @@ export class CachedPokemonLocalDataSource implements PokemonLocalDataSource {
     private readonly detailTtlMs: number = THIRTY_DAYS_MS,
   ) {}
 
-  async readPage(paging: PagingKey): Promise<CachedValue<PokemonPage> | null> {
-    const cached = await this.cache.read(pageKey(paging), this.pageTtlMs, isStoredPage);
+  async readSummariesPage(paging: PagingKey): Promise<CachedValue<PokemonSummariesPage> | null> {
+    const cached = await this.cache.read(
+      summariesPageKey(paging),
+      this.pageTtlMs,
+      isStoredSummariesPage,
+    );
     if (cached === null) return null;
-    return { data: mapStoredPageToDomain(cached.data), isStale: cached.isStale };
+    return { data: mapStoredSummariesPageToDomain(cached.data), isStale: cached.isStale };
   }
 
-  async writePage(paging: PagingKey, page: PokemonPage): Promise<void> {
-    await this.cache.write(pageKey(paging), mapPokemonPageToStored(page));
+  async writeSummariesPage(paging: PagingKey, page: PokemonSummariesPage): Promise<void> {
+    await this.cache.write(summariesPageKey(paging), mapSummariesPageToStored(page));
   }
 
   async readPokemon(id: number): Promise<CachedValue<Pokemon> | null> {

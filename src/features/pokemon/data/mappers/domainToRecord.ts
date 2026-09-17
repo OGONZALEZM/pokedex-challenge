@@ -1,7 +1,5 @@
 import type { Pokemon } from '../../domain/entities/Pokemon';
-import type { PokemonPage } from '../../domain/entities/PokemonPage';
 import type { StoredPokemon } from '../records/StoredPokemon';
-import type { StoredPage } from '../records/StoredPage';
 
 /**
  * Serializes a domain {@link Pokemon} into its persistence form.
@@ -17,14 +15,5 @@ export const mapPokemonToStored = (pokemon: Pokemon): StoredPokemon => ({
   weight: pokemon.weight,
   stats: pokemon.stats,
   abilities: pokemon.abilities,
-});
-
-/**
- * Serializes a domain {@link PokemonPage} into its persistence form.
- * `hasMore` is intentionally discarded because it is derivable from
- * `nextOffset` on read; storing it would introduce redundant state.
- */
-export const mapPokemonPageToStored = (page: PokemonPage): StoredPage => ({
-  items: page.items.map(mapPokemonToStored),
-  nextOffset: page.nextOffset,
+  ...(pokemon.description !== undefined && { description: pokemon.description }),
 });

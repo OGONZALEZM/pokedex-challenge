@@ -9,6 +9,12 @@ import type { Route } from './Route';
  * change — consumers are untouched.
  */
 export interface Router {
+  /**
+   * Full route stack from bottom (oldest) to top (current). Exposed so the
+   * outlet can keep-alive every mounted screen and preserve state across
+   * navigation — the same guarantee React Navigation offers by default.
+   */
+  readonly stack: readonly Route[];
   /** Route currently rendered at the top of the stack. */
   readonly current: Route;
   /** `true` when a previous route exists and `goBack()` will succeed. */

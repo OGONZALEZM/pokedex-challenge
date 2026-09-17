@@ -1,5 +1,4 @@
 import {
-  ActivityIndicator,
   FlatList,
   RefreshControl,
   StyleSheet,
@@ -8,15 +7,16 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '../../../../core/ui/ThemedText';
+import { PokeballSpinner } from '../../../../core/ui/PokeballSpinner';
 import { useTheme } from '../../../../core/theme/useTheme';
-import type { Pokemon } from '../../domain/entities/Pokemon';
+import type { PokemonSummary } from '../../domain/entities/PokemonSummary';
 import type { PokemonRepository } from '../../domain/repositories/PokemonRepository';
 import { PokemonCard } from '../components/PokemonCard';
 import { usePokemonListViewModel } from '../viewmodels/usePokemonListViewModel';
 
 interface PokemonListScreenProps {
   readonly repository: PokemonRepository;
-  readonly onSelectPokemon: (id: number) => void;
+  readonly onSelectPokemon: (summary: PokemonSummary) => void;
 }
 
 /**
@@ -30,8 +30,8 @@ export const PokemonListScreen = ({ repository, onSelectPokemon }: PokemonListSc
   const theme = useTheme();
   const { state, loadMore, refresh, retry } = usePokemonListViewModel(repository);
 
-  const renderItem: ListRenderItem<Pokemon> = ({ item }) => (
-    <PokemonCard pokemon={item} onPress={onSelectPokemon} />
+  const renderItem: ListRenderItem<PokemonSummary> = ({ item }) => (
+    <PokemonCard summary={item} onPress={onSelectPokemon} />
   );
 
   const header = (
@@ -48,7 +48,7 @@ export const PokemonListScreen = ({ repository, onSelectPokemon }: PokemonListSc
       <SafeAreaView style={[styles.root, { backgroundColor: theme.colors.background.canvas }]}>
         {header}
         <View style={styles.centered}>
-          <ActivityIndicator size="large" color={theme.colors.accent.default} />
+          <PokeballSpinner size={72} />
         </View>
       </SafeAreaView>
     );
@@ -97,7 +97,7 @@ export const PokemonListScreen = ({ repository, onSelectPokemon }: PokemonListSc
         ListFooterComponent={
           state.loadingMore ? (
             <View style={styles.footer}>
-              <ActivityIndicator color={theme.colors.accent.default} />
+              <PokeballSpinner size={40} />
             </View>
           ) : undefined
         }

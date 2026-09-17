@@ -15,6 +15,12 @@ export interface Pokemon {
   readonly weight: number;
   readonly stats: PokemonStats;
   readonly abilities: readonly string[];
+  /**
+   * Flavor text pulled from the `/pokemon-species/{id}` endpoint. Optional
+   * because that call is best-effort — the pokemon renders without it if
+   * the species request fails or has no English entry.
+   */
+  readonly description?: string;
 }
 
 /**

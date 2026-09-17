@@ -15,6 +15,7 @@ export interface StoredPokemon {
   readonly weight: number;
   readonly stats: StoredPokemonStats;
   readonly abilities: readonly string[];
+  readonly description?: string;
 }
 
 export interface StoredPokemonStats {
@@ -47,5 +48,6 @@ export const isStoredPokemon = (value: unknown): value is StoredPokemon => {
     && typeof v.height === 'number'
     && typeof v.weight === 'number'
     && isStoredStats(v.stats)
-    && Array.isArray(v.abilities) && v.abilities.every((a) => typeof a === 'string');
+    && Array.isArray(v.abilities) && v.abilities.every((a) => typeof a === 'string')
+    && (v.description === undefined || typeof v.description === 'string');
 };

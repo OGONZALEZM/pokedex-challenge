@@ -1,7 +1,5 @@
 import type { Pokemon } from '../../domain/entities/Pokemon';
-import type { PokemonPage } from '../../domain/entities/PokemonPage';
 import type { StoredPokemon } from '../records/StoredPokemon';
-import type { StoredPage } from '../records/StoredPage';
 
 /**
  * Rehydrates a persisted {@link StoredPokemon} into the domain
@@ -18,15 +16,5 @@ export const mapStoredPokemonToDomain = (record: StoredPokemon): Pokemon => ({
   weight: record.weight,
   stats: record.stats,
   abilities: record.abilities,
-});
-
-/**
- * Rehydrates a persisted {@link StoredPage} into a domain {@link PokemonPage}.
- * `hasMore` is derived from `nextOffset` so the domain contract stays
- * self-consistent regardless of how the page was persisted.
- */
-export const mapStoredPageToDomain = (record: StoredPage): PokemonPage => ({
-  items: record.items.map(mapStoredPokemonToDomain),
-  hasMore: record.nextOffset !== null,
-  nextOffset: record.nextOffset,
+  ...(record.description !== undefined && { description: record.description }),
 });

@@ -35,6 +35,7 @@ export const useStackRouter = (initial: Route): Router => {
 
   return useMemo<Router>(
     () => ({
+      stack,
       current: stack[stack.length - 1] ?? initial,
       canGoBack: stack.length > 1,
       navigate,
