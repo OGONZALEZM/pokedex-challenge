@@ -1,5 +1,10 @@
+import type { PokemonType } from '../enums/PokemonType';
+
 /**
  * Domain entity representing a Pokémon.
+ * Units are normalized at the mapper boundary: `height` in meters,
+ * `weight` in kilograms. All collections are `readonly` to enforce
+ * immutability across the app.
  */
 export interface Pokemon {
   readonly id: number;
@@ -13,30 +18,7 @@ export interface Pokemon {
 }
 
 /**
- * Closed set of the 18 elemental types recognized by PokéAPI
- */
-export type PokemonType =
-  | 'normal'
-  | 'fire'
-  | 'water'
-  | 'electric'
-  | 'grass'
-  | 'ice'
-  | 'fighting'
-  | 'poison'
-  | 'ground'
-  | 'flying'
-  | 'psychic'
-  | 'bug'
-  | 'rock'
-  | 'ghost'
-  | 'dragon'
-  | 'dark'
-  | 'steel'
-  | 'fairy';
-
-/**
- * Base stats of a Pokémon.
+ * Base stats of a Pokémon, keyed by canonical PokéAPI stat name in camelCase.
  */
 export interface PokemonStats {
   readonly hp: number;
