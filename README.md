@@ -1,10 +1,16 @@
 # Pokedex Challenge
 
 A React Native Pokédex built as a technical test. Focused on architectural
-clarity, offline-first behavior, and pragmatic UX over feature breadth.
+clarity and offline-first behavior.
 
 Renders a paginated grid of Pokémon and a detail screen with stats,
 description, and type info. Data comes from the public [PokéAPI](https://pokeapi.co).
+
+
+
+https://github.com/user-attachments/assets/848dca4c-82a1-4c24-a5d1-f892f050c461
+
+
 
 ---
 
@@ -12,8 +18,7 @@ description, and type info. Data comes from the public [PokéAPI](https://pokeap
 
 ### Prerequisites
 
-- **Node** ≥ 22. Older versions will emit
-  warnings but usually still work in dev.
+- **Node** ≥ 22.
 - **Yarn** or **npm**.
 - **iOS:** Xcode 15+, CocoaPods (`brew install cocoapods`).
 - **Android:** Android Studio + a configured device/emulator.
